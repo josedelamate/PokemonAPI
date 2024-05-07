@@ -18,15 +18,18 @@ const bPrev = document.querySelector('.btn-prev')
 const bNext = document.querySelector('.btn-next')
 
 let pokemonAtual = 1
+let max = 1025
+let min = 1 
+
 
 async function loadPokemon(pokemon) {
     const url = `https://pokeapi.co/api/v2/pokemon/${pokemon}`
     const response = await fetch(url)
-    const data = await response.json()
-    return data
+    if (response.status === 200) {
+        const data = await response.json()
+        return data
+    }
 }
-
-
 
 async function renderPokemon(pokemon){
     nome.innerHTML = 'Carregando ...'
@@ -37,7 +40,40 @@ async function renderPokemon(pokemon){
         nome.innerHTML = data.name
         numero.innerHTML = data.id
         imagem.src = data['sprites']['versions']['generation-v']['black-white']['animated']['front_default']
+        pokemonAtual = data.id
+    }   
+    else {
+        imagem.style.display = 'none'
+        nome.innerHTML = 'Não encontrado Ø'
+        numero.innerHTML = '¢'
+        pokemonAtual = 1
     }
+    input.value = '';
+
 }
 
+form.addEventListener('submit',(e) => {
+    e.preventDefault()
+    renderPokemon(input.value.toLowerCase())
+})
+
 renderPokemon(pokemonAtual)
+
+bNext.addEventListener('click',(e)=>{
+    if (pokemonAtual >= min && pokemonAtual <= max) {
+        pokemonAtual = pokemonAtual + 1 
+        renderPokemon(pokemonAtual)
+    } else {
+        alert('Fora do limite permitido!')
+    }
+})
+
+bPrev.addEventListener('click',(e)=>{
+    if (pokemonAtual > min ){
+        pokemonAtual = pokemonAtual - 1 
+        renderPokemon(pokemonAtual)
+    }else {
+        alert('Fora do limite permitido!')
+    }
+})
+
